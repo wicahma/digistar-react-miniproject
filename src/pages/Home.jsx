@@ -1,4 +1,9 @@
-import { PlusIcon } from "@heroicons/react/20/solid";
+import {
+  CheckIcon,
+  ChevronDoubleUpIcon,
+  PlusIcon,
+  XMarkIcon,
+} from "@heroicons/react/20/solid";
 import React, { useContext, useEffect } from "react";
 import HistoryCard from "../components/HistoryCard";
 import MiniCard from "../components/MiniCard";
@@ -11,6 +16,7 @@ import { currencyFormatter } from "../utils/Formatter";
 import ModalWallet from "../components/ModalWallet";
 import ModalCategory from "../components/ModalCategory";
 import AddMiniCard from "../components/AddMiniCard";
+import AddItemCard from "../components/AddItemCard";
 
 const Home = () => {
   const { category, setCategory, item, setItem, wallet, setWallet } =
@@ -23,6 +29,7 @@ const Home = () => {
   });
 
   const [isAddingWallet, setIsAddingWallet] = React.useState(false);
+  const [isAddingItem, setIsAddingItem] = React.useState(false);
   const [isAddingCategory, setIsAddingCategory] = React.useState(false);
 
   useEffect(() => {
@@ -31,12 +38,10 @@ const Home = () => {
       setItem(res.data);
     });
     getWallets().then((res) => {
-      console.log("reswallet", res);
       if (!res) return;
       setWallet(res.data);
     });
     getCategory().then((res) => {
-      console.log("rescategory", res);
       if (!res) return;
       setCategory(res.data);
     });
@@ -49,15 +54,28 @@ const Home = () => {
           <h1 className="text-3xl bg-slate-700/50 backdrop-blur-lg w-fit py-3 px-4 font-bold text-slate-200 rounded-br-2xl">
             Wollet
           </h1>
-          <h3 className="px-3 pt-1 text-3xl font-medium text-gray-400">
-            History
-          </h3>
-          <h5 className="px-3 text-lg font-normal leading-5 text-gray-400">
-            Let's see what have you been spent on
-          </h5>
+          <div className="flex justify-between items-center pr-3">
+            <div>
+              <h3 className="px-3 pt-1 text-3xl font-medium text-gray-400">
+                History
+              </h3>
+              <h5 className="px-3 text-lg font-normal leading-5 text-gray-400">
+                Let's see what have you been spent on
+              </h5>
+            </div>
+            <button
+              onClick={() => setIsAddingItem(true)}
+              className="aspect-square h-14 hover:bg-slate-700 text-slate-400 hover:text-slate-300 transition-colors rounded-lg"
+            >
+              <PlusIcon className="aspect-auto " />
+            </button>
+          </div>
         </div>
         <div className="flex flex-col h-full ">
           <div className="grow px-3 self-stretch justify-self-stretch my-3 space-y-3">
+            {isAddingItem && (
+              <AddItemCard closeCallback={() => setIsAddingItem(false)} />
+            )}
             {item && item.length > 0 ? (
               item.map((item, i) => (
                 <HistoryCard
@@ -68,6 +86,7 @@ const Home = () => {
                   }
                   wallet={item.wallet ? item.wallet : { name: "Uncategorized" }}
                   name={item.title}
+                  id={item._id}
                   date={item.updatedAt}
                   type={item.flowType}
                   handleCardClick={() => {
@@ -130,7 +149,6 @@ const Home = () => {
                   uuid={cat._id}
                   type={"wallet"}
                   handleCardClick={() => {
-                    console.log("clicked");
                     setShowModal({
                       status: true,
                       type: "wallet",
@@ -170,7 +188,6 @@ const Home = () => {
                   uuid={cat._id}
                   type={"category"}
                   handleCardClick={(e) => {
-                    console.log("clicked");
                     setShowModal({
                       status: true,
                       type: "category",
